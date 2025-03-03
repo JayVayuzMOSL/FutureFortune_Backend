@@ -12,7 +12,8 @@
   "engines": {
     "node": "22"
   },
-  "main": "src/index.js",
+  "main": "index.js",
+  "type": "module",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
