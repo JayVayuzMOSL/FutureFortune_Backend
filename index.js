@@ -2,6 +2,7 @@ const express = require("express");
 const bodyparser = require("body-parser");
 var admin = require("firebase-admin");
 
+var serviceAccount = require("./src/futurefortunetasks-firebase-adminsdk-fbsvc-664ef0a5a8.json");
 
 
 admin.initializeApp({
