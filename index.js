@@ -1,66 +1,47 @@
-import {initializeApp, applicationDefault } from 'firebase-admin/app';
-import { getMessaging } from "firebase-admin/messaging";
-import express, { json } from "express";
+import express from "express";
 import cors from "cors";
+import admin from "firebase-admin";
+import dotenv from "dotenv";
 
+dotenv.config(); // Load environment variables
 
-process.env.GOOGLE_APPLICATION_CREDENTIALS;
+// Initialize Firebase Admin SDK using default credentials
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+  projectId: process.env.PROJECT_ID, // Load project ID from .env
+});
+
+console.log("🔥 Firebase Initialized Successfully");
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+app.post("/send", async (req, res) => {
+  try {
+    const { fcmToken } = req.body;
 
-app.use(
-  cors({
-    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
-  })
-);
+    if (!fcmToken) {
+      return res.status(400).json({ error: "Missing fcmToken" });
+    }
 
-app.use(function(req, res, next) {
-  res.setHeader("Content-Type", "application/json");
-  next();
+    const message = {
+      notification: {
+        title: "User Notification",
+        body: "This is a Test Notification",
+      },
+      token: fcmToken,
+    };
+
+    const response = await admin.messaging().send(message);
+    res.status(200).json({ message: "Notification sent successfully", response });
+  } catch (error) {
+    console.error("❌ Error sending message:", error);
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
 });
 
-
-initializeApp({
-  credential: applicationDefault(),
-  projectId: 'futurefortunetasks',
-});
-
-app.post("/send", function (req, res) {
-  const receivedToken = req.body.fcmToken;
-  
-  const message = {
-    notification: {
-      title: "Notif",
-      body: 'This is a Test Notification'
-    },
-    token: "cQ33EiijT2-t_SdLHXXE51:APA91bFulmy2O4YEAdxSzTIAvWl5dyzPYAe8FzJN91jxJKlpknjsI0OUMGRTuoqMG9EY_S6TMwjZ4QHtgKgJRUwU_GiqcOWIeQ9OKqHqsHDZi__jMGUkOlY",
-  };
-  
-  getMessaging()
-    .send(message)
-    .then((response) => {
-      res.status(200).json({
-        message: "Successfully sent message",
-        token: receivedToken,
-      });
-      console.log("Successfully sent message:", response);
-    })
-    .catch((error) => {
-      res.status(400);
-      res.send(error);
-      console.log("Error sending message:", error);
-    });
-  
-  
-});
-
-app.listen(3000, function () {
-  console.log("Server started on port 3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server started on port ${PORT}`);
 });
