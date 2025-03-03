@@ -36,7 +36,7 @@ app.post("/send", function (req, res) {
       title: "Notif",
       body: 'This is a Test Notification'
     },
-    token: "YOUR FCM TOKEN HERE",
+    token: "cQ33EiijT2-t_SdLHXXE51:APA91bFulmy2O4YEAdxSzTIAvWl5dyzPYAe8FzJN91jxJKlpknjsI0OUMGRTuoqMG9EY_S6TMwjZ4QHtgKgJRUwU_GiqcOWIeQ9OKqHqsHDZi__jMGUkOlY",
   };
   
   getMessaging()
