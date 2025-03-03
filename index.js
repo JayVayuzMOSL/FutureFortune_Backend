@@ -1,59 +1,66 @@
-import express from "express";
+import {initializeApp, applicationDefault } from 'firebase-admin/app';
+import { getMessaging } from "firebase-admin/messaging";
+import express, { json } from "express";
 import cors from "cors";
-import admin from "firebase-admin";
-import fs from "fs";
-import dotenv from "dotenv";
 
-dotenv.config(); // Load environment variables
 
-// Firebase Service Account Key
-const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-if (!fs.existsSync(serviceAccountPath)) {
-  console.error("❌ Service account file not found:", serviceAccountPath);
-  process.exit(1);
-}
-
-const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
-
-// Initialize Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-console.log("🔥 Firebase Initialized Successfully");
+process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 const app = express();
 app.use(express.json());
-app.use(cors());
 
-// Endpoint to send notification
-app.post("/send", async (req, res) => {
-  try {
-    const { fcmToken } = req.body;
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
-    if (!fcmToken) {
-      return res.status(400).json({ error: "Missing fcmToken" });
-    }
+app.use(
+  cors({
+    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+  })
+);
 
-    const message = {
-      notification: {
-        title: "User Notification",
-        body: "This is a Test Notification",
-      },
-      token: fcmToken,
-    };
-
-    const response = await admin.messaging().send(message);
-    res.status(200).json({ message: "Notification sent successfully", response });
-  } catch (error) {
-    console.error("❌ Error sending message:", error);
-    res.status(500).json({ error: "Internal Server Error", details: error.message });
-  }
+app.use(function(req, res, next) {
+  res.setHeader("Content-Type", "application/json");
+  next();
 });
 
-// Start Server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server started on port ${PORT}`);
+
+initializeApp({
+  credential: applicationDefault(),
+  projectId: 'potion-for-creators',
+});
+
+app.post("/send", function (req, res) {
+  const receivedToken = req.body.fcmToken;
+  
+  const message = {
+    notification: {
+      title: "Notif",
+      body: 'This is a Test Notification'
+    },
+    token: "YOUR FCM TOKEN HERE",
+  };
+  
+  getMessaging()
+    .send(message)
+    .then((response) => {
+      res.status(200).json({
+        message: "Successfully sent message",
+        token: receivedToken,
+      });
+      console.log("Successfully sent message:", response);
+    })
+    .catch((error) => {
+      res.status(400);
+      res.send(error);
+      console.log("Error sending message:", error);
+    });
+  
+  
+});
+
+app.listen(3000, function () {
+  console.log("Server started on port 3000");
 });
