@@ -2,22 +2,12 @@ import express from "express";
 import cors from "cors";
 import admin from "firebase-admin";
 import dotenv from "dotenv";
-import fs from "fs";
 
 dotenv.config(); // Load environment variables
 
-const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-if (!fs.existsSync(serviceAccountPath)) {
-  console.error("❌ Service account file not found:", serviceAccountPath);
-  process.exit(1);
-}
-
-const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
-
 // Initialize Firebase Admin SDK using default credentials
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.applicationDefault(),
   projectId: process.env.PROJECT_ID, // Load project ID from .env
 });
 
