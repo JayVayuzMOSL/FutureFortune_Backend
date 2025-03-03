@@ -7,7 +7,7 @@ dotenv.config(); // Load environment variables
 
 // Initialize Firebase Admin SDK using default credentials
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
+  credential: process.env.GOOGLE_APPLICATION_CREDENTIALS,
   projectId: process.env.PROJECT_ID, // Load project ID from .env
 });
 
