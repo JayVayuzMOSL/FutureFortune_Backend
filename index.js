@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config(); // Load environment variables
 
 // Firebase Service Account Key
-const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || "./futurefortunetasks-firebase-adminsdk-fbsvc-664ef0a5a8.json";
+const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 if (!fs.existsSync(serviceAccountPath)) {
   console.error("❌ Service account file not found:", serviceAccountPath);
