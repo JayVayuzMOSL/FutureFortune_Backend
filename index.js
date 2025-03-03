@@ -5,6 +5,7 @@ import cors from "cors";
 
 initializeApp({
   credential: applicationDefault(),
+  projectId: 'futurefortunetasks'
 });
 
 const app = express();
